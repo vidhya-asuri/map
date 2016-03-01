@@ -12,11 +12,19 @@ module.exports = function(grunt) {
           sourceMap: true,
         },
         files: {
-          'css/app.css': 'scss/app.scss'
+          'css/app.css': 'scss/app.scss', 
+          'css/map.css': 'scss/map.scss' 
         }
       }
     },
-
+    jsbeautifier : {
+       files: {
+         src : ["js/*.js"]
+       },
+       options: {
+         dest : ["js/dest/"],
+       }
+    },
     watch: {
       grunt: {
         options: {
@@ -34,6 +42,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-sass');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-jsbeautifier');
 
   grunt.registerTask('build', ['sass']);
   grunt.registerTask('default', ['build','watch']);
