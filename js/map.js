@@ -51,14 +51,13 @@ function initialize() {
         });
     }
 
-    function nearbyResults() {
-        var self = this;
-        self.allResults = {
+    var nearbyResults = {
+        allResults : {
             bakeries: ko.observableArray([]),
             bookstores: ko.observableArray([]),
             parkingLots: ko.observableArray([])
-        };
-        self.saveBakeries = function(results) {
+        }
+        /*self.saveBakeries = function(results) {
             self.allResults.bakeries = results;
         };
         self.saveBookstores = function(results) {
@@ -66,11 +65,11 @@ function initialize() {
         };
         self.saveParking = function(results) {
             self.allResults.parkingLots = results;
-        };
-        self.displayResults = function() {
+        }; */
+        /* self.displayResults = function() {
             // create div with class row for each set of results,
             // then a div with class column with
-            /*var rowDiv = document.createElement("div");
+            var rowDiv = document.createElement("div");
             rowDiv.className = "row";
             var columnDiv = document.createElement("div");
             columnDiv.className = "small 12-columns large 6-columns";
@@ -89,8 +88,8 @@ function initialize() {
             }
             // add the newly created element and its content into the DOM 
             var resultsDiv = document.getElementById("results");
-            document.body.insertBefore(rowDiv, resultsDiv); */
-        };
+            document.body.insertBefore(rowDiv, resultsDiv); 
+        }; */
 
     }
 
@@ -131,13 +130,14 @@ function initialize() {
 
 
         // Create a list and display all the results.
-        var resultsObj = new nearbyResults();
+        //var resultsObj = new nearbyResults();
+        ko.applyBindings(nearbyResults.allResults);
 
         function markBakeries(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 //resultsObj.saveBakeries(results);
-                ko.applyBindings(resultsObj);
                 //resultsObj.displayResults(results);
+                nearbyResults.allResults.bakeries(results);
                 for (var i = 0; i < results.length; i++) {
                     createMarker(results[i]);
                 }
@@ -147,8 +147,7 @@ function initialize() {
         function markBookstores(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 //resultsObj.saveBookstores(results);
-                ko.applyBindings( new nearbyResults(results));
-                //resultsObj.displayResults(results);
+                nearbyResults.allResults.bookstores(results);
                 for (var i = 0; i < results.length; i++) {
                     createMarker(results[i]);
                 }
@@ -158,8 +157,8 @@ function initialize() {
         function markParking(results, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 //resultsObj.saveParking(results);
-                ko.applyBindings( new nearbyResults(results));
                 //resultsObj.displayResults(results);
+                nearbyResults.allResults.parkingLots(results);
                 for (var i = 0; i < results.length; i++) {
                     createMarker(results[i]);
                 }

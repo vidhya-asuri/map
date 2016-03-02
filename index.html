@@ -45,10 +45,13 @@
      </div>
    </div>
    
-   <div id="results" data-bind="forach: results">
+   <div id="results">
    <div class="row">
      <div class="small 12-columns large 12-columns">
        <ul class="inline-list" data-bind="foreach: bakeries">
+         <li> <span data-bind="text: name"> </span>   </li>
+       </ul>
+       <ul class="inline-list" data-bind="foreach: bookstores">
          <li> <span data-bind="text: name"> </span>   </li>
        </ul>
      </div>
