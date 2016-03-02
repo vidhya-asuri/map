@@ -93,6 +93,7 @@ function initialize() {
 
     }
 
+
     function getPlaceID(results, status) {
 
         var detailsRequest = {
@@ -130,7 +131,6 @@ function initialize() {
 
 
         // Create a list and display all the results.
-        //var resultsObj = new nearbyResults();
         ko.applyBindings(nearbyResults.allResults);
 
         function markBakeries(results, status) {
@@ -188,50 +188,9 @@ function initialize() {
     }
 }
 
-    function nearbyResults() {
-        var self = this;
-        self.allResults = {
-            bakeries: ko.observableArray([]),
-            bookstores: ko.observableArray([]),
-            parkingLots: ko.observableArray([])
-        };
-        self.bakeries = ko.observableArray([]);
-        self.saveBakeries = function(results) {
-            self.allResults.bakeries = results;
-        };
-        self.saveBookstores = function(results) {
-            self.allResults.bookstores = results;
-        };
-        self.saveParking = function(results) {
-            self.allResults.parkingLots = results;
-        };
-        self.displayResults = function() {
-            // create div with class row for each set of results,
-            // then a div with class column with
-            /*var rowDiv = document.createElement("div");
-            rowDiv.className = "row";
-            var columnDiv = document.createElement("div");
-            columnDiv.className = "small 12-columns large 6-columns";
-            rowDiv.appendChild(columnDiv); // append the columnDiv as a child of the rowDiv.
-            var ulElement = document.createElement("ul");
-            ulElement.className = "inline-list";
-            columnDiv.appendChild(ulElement); // append the columnDiv as a child of the rowDiv.
-            for (var i = 0; i < self.allResults.bakeries.length; i++) {
-                // create an li element for each result
-                // inside each li element create a p tag with the name of the location
-                var resultListItem = document.createElement("li");
-                ulElement.appendChild(resultListItem);
-                var listItem_P_Element = document.createElement("p");
-                listItem_P_Element.innerText = self.allResults.bakeries[i].name;
-                resultListItem.appendChild(listItem_P_Element);
-            }
-            // add the newly created element and its content into the DOM
-            var resultsDiv = document.getElementById("results");
-            document.body.insertBefore(rowDiv, resultsDiv); */
-        };
-
-    }
-
+$('#checkboxParking').on('change', function() {
+  console.log($(this).is(':checked'));
+});
 
 
 // Run the initialize function when the window has finished loading.

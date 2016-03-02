@@ -45,7 +45,7 @@
      </div>
    </div>
    
-   <div id="results">
+   <!-- <div id="results">
    <div class="row">
      <div class="small 12-columns large 12-columns">
        <ul class="inline-list" data-bind="foreach: bakeries">
@@ -56,10 +56,40 @@
        </ul>
      </div>
    </div>
-   
+   </div> --> 
 
-   </div> 
+      <!-- <td> <input id="toggleDisplayChkBox" type="checkbox"><label for="toggleDisplayChkBox">Show/Hide</label> </td> -->
 
+
+  <div class="row">
+    <div class="large-12 columns">
+
+<table>
+    <thead>
+        <tr><th>Parking</th><th>Bakeries</th><th>Bookstores</th></tr>
+        <tr>  
+        <th>  
+      <input id="checkboxParking" type="checkbox" "onclick=toggleMarkers" ><label for="checkboxParking">Turn off markers</label>
+             </th>
+        <th>  
+      <input id="checkboxBakeries" type="checkbox"><label for="checkboxBakeries">Turn off markers</label>
+            </th> 
+        <th>  
+      <input id="checkboxBookstores" type="checkbox"><label for="checkboxBookstores">Turn off markers</label>
+            </th> 
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td data-bind="foreach: parkingLots"><p data-bind="text: name"></p> </td>
+            <td data-bind="foreach: bakeries"><p data-bind="text: name"> </p> </td>
+            <td data-bind="foreach: bookstores"><p data-bind="text: name"></p> </td>
+        </tr>
+    </tbody>
+</table>
+
+    </div>
+  </div>
 
    <div id="map">
 
