@@ -5,7 +5,9 @@
 // https://console.developers.google.com/apis/credentials?project=mapp5-1232
 
 // https://maps.googleapis.com/maps/api/place/radarsearch/json?location=48.859294,2.347589&radius=5000&type=cafe&keyword=vegetarian&key=YOUR_API_KEY
-var allMarkers = [];
+var bakeriesMarkers = [];
+var bookstoresMarkers = [];
+var parkingLotsMarkers = [];
     var nyc = new google.maps.LatLng(40.7127, 74.0059);
     var pyrmont = {
         lat: -33.867,
@@ -39,7 +41,7 @@ function initialize() {
     service.textSearch(placeRequest, getPlaceID);
 
 
-    function createMarker(place, label) {
+    /* function createMarker(place, label) {
         var placeLoc = place.geometry.location;
         var marker = new google.maps.Marker({
             map: map,
@@ -47,6 +49,33 @@ function initialize() {
             position: place.geometry.location
         });
         allMarkers.push(marker);
+        google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(place.name);
+            infowindow.open(map, this);
+        });
+    } */
+    function createMarker(place, label) {
+        var placeLoc = place.geometry.location;
+        var marker = new google.maps.Marker({
+            map: map,
+            label: label,
+            position: place.geometry.location
+        });
+       switch (label) {
+  case "F":
+        bakeriesMarkers.push(marker);
+    break;
+  case "B":
+        bookstoresMarkers.push(marker);
+    break;
+  case "P":
+        parkingLotsMarkers.push(marker);
+    break;
+  default:
+    console.log("Invalid marker label: " + label);
+} 
+
+        //allMarkers.push(marker);
         google.maps.event.addListener(marker, 'click', function() {
             infowindow.setContent(place.name);
             infowindow.open(map, this);
@@ -148,29 +177,57 @@ function initialize() {
     }
 }
 
-    var nearbyResults = {
-        allResults : {
-            bakeries: ko.observableArray([]),
-            bookstores: ko.observableArray([]),
-            parkingLots: ko.observableArray([])
-        }
-    }
+var nearbyResults = {
+     allResults : {
+         bakeries: ko.observableArray([]),
+         bookstores: ko.observableArray([]),
+         parkingLots: ko.observableArray([])
+     }
+}
+
 $('#checkboxParkingLots').on('change', function() {
-  //console.log($(this).is(':checked'));
   if(($(this).is(':checked'))){
+    $('#parkingLotsList').hide();
     // display markers for parking lots.
-    for(var m=0; m < allMarkers.length; m++){
-      if( allMarkers[m].label === 'P'){
-        allMarkers[m].setMap(null);
-      }
+    for(var m=0; m < parkingLotsMarkers.length; m++){
+        parkingLotsMarkers[m].setMap(null);
     }  
   }
   else{
-    for(var m=0; m < allMarkers.length; m++){
-      if( allMarkers[m].label === 'P'){
-        allMarkers[m].setMap(map);
-      }
+    $('#parkingLotsList').show();
+    for(var m=0; m < parkingLotsMarkers.length; m++){
+        parkingLotsMarkers[m].setMap(map);
     }  
+  }
+});
+$('#checkboxBakeries').on('change', function() {
+  if(($(this).is(':checked'))){
+    $('#bakeriesList').hide();
+    // display markers for parking lots.
+    for(var m=0; m < bakeriesMarkers.length; m++){
+        bakeriesMarkers[m].setMap(null);
+    }
+  }
+  else{
+    $('#bakeriesList').show();
+    for(var m=0; m < bakeriesMarkers.length; m++){
+        bakeriesMarkers[m].setMap(map);
+    }
+  }
+});
+$('#checkboxBookstores').on('change', function() {
+  if(($(this).is(':checked'))){
+    // display markers for parking lots.
+    $('#bookstoresList').hide();
+    for(var m=0; m < bookstoresMarkers.length; m++){
+        bookstoresMarkers[m].setMap(null);
+    }
+  }
+  else{
+    $('#bookstoresList').show();
+    for(var m=0; m < bookstoresMarkers.length; m++){
+        bookstoresMarkers[m].setMap(map);
+    }
   }
 });
 

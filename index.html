@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Foundation</title>
+    <title>Neighborhood Map</title>
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/map.css" />
     <script src="bower_components/modernizr/modernizr.js"></script>
@@ -35,15 +35,15 @@
          </li>
         </ul>
          <dl> <dt> Bakeries </dt> </dl>
-       <ul class="small-block-grid-3" data-bind="foreach: bakeries">
+       <ul id="bakeriesList" class="small-block-grid-3" data-bind="foreach: bakeries">
          <li> <span data-bind="text: name"> </span>   </li>
        </ul>
          <dl> <dt> Bookstores </dt> </dl>
-       <ul class="small-block-grid-3" data-bind="foreach: bookstores">
+       <ul id="bookstoresList" class="small-block-grid-3" data-bind="foreach: bookstores">
          <li> <span data-bind="text: name"> </span>   </li>
        </ul>
          <dl> <dt> Parking Lots </dt> </dl>
-       <ul class="small-block-grid-3" data-bind="foreach: parkingLots">
+       <ul id="parkingLotsList" class="small-block-grid-3" data-bind="foreach: parkingLots">
          <li> <span data-bind="text: name"> </span>   </li>
        </ul>
      </div>
