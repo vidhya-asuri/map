@@ -14,56 +14,44 @@
   </head>
   <body>
 
-<div class="off-canvas-wrap" data-offcanvas>
-  <div class="inner-wrap">
-
-    <a class="left-off-canvas-toggle" href="#" >Menu</a>
-
-    <!-- Off Canvas Menu -->
-    <aside class="left-off-canvas-menu">
-        <!-- whatever you want goes here -->
-        <ul>
-          <li><a href="#">Item 1</a></li>
-        
-        </ul>
-    </aside>
-
-    <!-- main content goes here -->
-    <p>Set in the year 0 F.E. ("Foundation Era"), The Psychohistorians opens on Trantor, the capital of the 12,000-year-old Galactic Empire. Though the empire appears stable and powerful, it is slowly decaying in ways that parallel the decline of the Western Roman Empire. Hari Seldon, a mathematician and psychologist, has developed psychohistory, a new field of science and psychology that equates all possibilities in large societies to mathematics, allowing for the prediction of future events.</p>
-
-  <!-- close the off-canvas menu -->
-  <a class="exit-off-canvas"></a>
-
-  </div>
-</div>
-
-
-
    <div class="row">
      <div class="large-12 columns">
-       <h1>Welcome to Foundation</h1>
+       <h1>Fisherman's Wharf - SanFrancisco</h1>
      </div>
    </div>
    
-   <!-- <div id="results">
+
    <div class="row">
-     <div class="small 12-columns large 12-columns">
-       <ul class="inline-list" data-bind="foreach: bakeries">
+     <div class="small-12 columns medium-6 columns large-12 columns">
+        <ul class="small-block-grid-3">
+         <li> 
+           <input id="checkboxBakeries" type="checkbox" "onclick=toggleMarkers" ><label for="checkboxBakeries">Toggle Bakeries </label>
+         </li>
+         <li> 
+           <input id="checkboxBookstores" type="checkbox" "onclick=toggleMarkers" ><label for="checkboxBookstores">Toggle Bookstores</label>
+         </li>
+         <li> 
+           <input id="checkboxParkingLots" type="checkbox" "onclick=toggleMarkers" ><label for="checkboxParkingLots">Toggle Parking Lots</label>
+         </li>
+        </ul>
+         <dl> <dt> Bakeries </dt> </dl>
+       <ul class="small-block-grid-3" data-bind="foreach: bakeries">
          <li> <span data-bind="text: name"> </span>   </li>
        </ul>
-       <ul class="inline-list" data-bind="foreach: bookstores">
+         <dl> <dt> Bookstores </dt> </dl>
+       <ul class="small-block-grid-3" data-bind="foreach: bookstores">
+         <li> <span data-bind="text: name"> </span>   </li>
+       </ul>
+         <dl> <dt> Parking Lots </dt> </dl>
+       <ul class="small-block-grid-3" data-bind="foreach: parkingLots">
          <li> <span data-bind="text: name"> </span>   </li>
        </ul>
      </div>
    </div>
-   </div> --> 
-
-      <!-- <td> <input id="toggleDisplayChkBox" type="checkbox"><label for="toggleDisplayChkBox">Show/Hide</label> </td> -->
-
 
   <div class="row">
     <div class="large-12 columns">
-
+<!-- 
 <table>
     <thead>
         <tr><th>Parking</th><th>Bakeries</th><th>Bookstores</th></tr>
@@ -87,7 +75,7 @@
         </tr>
     </tbody>
 </table>
-
+-->
     </div>
   </div>
 

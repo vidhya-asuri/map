@@ -5,11 +5,7 @@
 // https://console.developers.google.com/apis/credentials?project=mapp5-1232
 
 // https://maps.googleapis.com/maps/api/place/radarsearch/json?location=48.859294,2.347589&radius=5000&type=cafe&keyword=vegetarian&key=YOUR_API_KEY
-
-function initialize() {
-
-    // Create a map to show the results, and an info window to
-    // pop up if the user clicks on the place marker.
+var allMarkers = [];
     var nyc = new google.maps.LatLng(40.7127, 74.0059);
     var pyrmont = {
         lat: -33.867,
@@ -29,6 +25,11 @@ function initialize() {
     var infowindow = new google.maps.InfoWindow();
     var service = new google.maps.places.PlacesService(map);
 
+function initialize() {
+
+    // Create a map to show the results, and an info window to
+    // pop up if the user clicks on the place marker.
+
     var placeRequest = {
         location: sfo,
         radius: '500',
@@ -38,60 +39,20 @@ function initialize() {
     service.textSearch(placeRequest, getPlaceID);
 
 
-    function createMarker(place) {
+    function createMarker(place, label) {
         var placeLoc = place.geometry.location;
         var marker = new google.maps.Marker({
             map: map,
+            label: label,
             position: place.geometry.location
         });
-
+        allMarkers.push(marker);
         google.maps.event.addListener(marker, 'click', function() {
             infowindow.setContent(place.name);
             infowindow.open(map, this);
         });
     }
 
-    var nearbyResults = {
-        allResults : {
-            bakeries: ko.observableArray([]),
-            bookstores: ko.observableArray([]),
-            parkingLots: ko.observableArray([])
-        }
-        /*self.saveBakeries = function(results) {
-            self.allResults.bakeries = results;
-        };
-        self.saveBookstores = function(results) {
-            self.allResults.bookstores = results;
-        };
-        self.saveParking = function(results) {
-            self.allResults.parkingLots = results;
-        }; */
-        /* self.displayResults = function() {
-            // create div with class row for each set of results,
-            // then a div with class column with
-            var rowDiv = document.createElement("div");
-            rowDiv.className = "row";
-            var columnDiv = document.createElement("div");
-            columnDiv.className = "small 12-columns large 6-columns";
-            rowDiv.appendChild(columnDiv); // append the columnDiv as a child of the rowDiv.
-            var ulElement = document.createElement("ul");
-            ulElement.className = "inline-list";
-            columnDiv.appendChild(ulElement); // append the columnDiv as a child of the rowDiv. 
-            for (var i = 0; i < self.allResults.bakeries.length; i++) {
-                // create an li element for each result 
-                // inside each li element create a p tag with the name of the location 
-                var resultListItem = document.createElement("li");
-                ulElement.appendChild(resultListItem);
-                var listItem_P_Element = document.createElement("p");
-                listItem_P_Element.innerText = self.allResults.bakeries[i].name;
-                resultListItem.appendChild(listItem_P_Element);
-            }
-            // add the newly created element and its content into the DOM 
-            var resultsDiv = document.getElementById("results");
-            document.body.insertBefore(rowDiv, resultsDiv); 
-        }; */
-
-    }
 
 
     function getPlaceID(results, status) {
@@ -139,7 +100,7 @@ function initialize() {
                 //resultsObj.displayResults(results);
                 nearbyResults.allResults.bakeries(results);
                 for (var i = 0; i < results.length; i++) {
-                    createMarker(results[i]);
+                    createMarker(results[i],'F');
                 }
             }
         }
@@ -149,7 +110,7 @@ function initialize() {
                 //resultsObj.saveBookstores(results);
                 nearbyResults.allResults.bookstores(results);
                 for (var i = 0; i < results.length; i++) {
-                    createMarker(results[i]);
+                    createMarker(results[i], 'B');
                 }
             }
         }
@@ -160,7 +121,7 @@ function initialize() {
                 //resultsObj.displayResults(results);
                 nearbyResults.allResults.parkingLots(results);
                 for (var i = 0; i < results.length; i++) {
-                    createMarker(results[i]);
+                    createMarker(results[i],'P');
                 }
             }
         }
@@ -184,12 +145,33 @@ function initialize() {
                 map.panTo(place.geometry.location);
             }
         });
-
     }
 }
 
-$('#checkboxParking').on('change', function() {
-  console.log($(this).is(':checked'));
+    var nearbyResults = {
+        allResults : {
+            bakeries: ko.observableArray([]),
+            bookstores: ko.observableArray([]),
+            parkingLots: ko.observableArray([])
+        }
+    }
+$('#checkboxParkingLots').on('change', function() {
+  //console.log($(this).is(':checked'));
+  if(($(this).is(':checked'))){
+    // display markers for parking lots.
+    for(var m=0; m < allMarkers.length; m++){
+      if( allMarkers[m].label === 'P'){
+        allMarkers[m].setMap(null);
+      }
+    }  
+  }
+  else{
+    for(var m=0; m < allMarkers.length; m++){
+      if( allMarkers[m].label === 'P'){
+        allMarkers[m].setMap(map);
+      }
+    }  
+  }
 });
 
 
