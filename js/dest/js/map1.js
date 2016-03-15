@@ -24,48 +24,23 @@ var map = new google.maps.Map(document.getElementById('map'), {
     scrollwheel: false
 });
 
-var infowindow = new google.maps.InfoWindow();
+var infoWindow = new google.maps.InfoWindow();
 var service = new google.maps.places.PlacesService(map);
-var httpRequest;
-var bakeryNames = [];
-var ids = [];
-var venues;
 
-function processFoursquare() {
-    if (httpRequest.readyState === XMLHttpRequest.DONE) {
-        if (httpRequest.status === 200) {
-            var response = (httpRequest.responseText);
-            var jsonResponse = JSON.parse(httpRequest.responseText);
-            venues = jsonResponse.response.venues;
-            for (var i = 0; i < venues.length; i++) {
-                bakeryNames.push(venues[i].name);
-                ids.push(venues[i].id);
-            }
-        } else {
-            alert('There was a problem with the request.');
-        }
+
+// Create a map to show the results, and an info window to
+// pop up if the user clicks on the place marker.
+function createMarker(place, label) {
+    var detailsRequest = {
+        placeId: place.place_id
     }
-}
-
-function matchPlaceName(element, index, array) {
-    var match = element.toLowerCase().includes(this.name.toLowerCase());
-    if (match) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-function getDetailsAndCreateMarker(place, map, label) {
-    var content = "";
-    console.log(place.place_id);
+    var placeLoc = place.geometry.location;
     var marker = new google.maps.Marker({
         map: map,
         label: label,
         title: place.name,
         position: place.geometry.location
     });
-
     switch (label) {
         case "F":
             bakeriesMarkers.push(marker);
@@ -79,95 +54,52 @@ function getDetailsAndCreateMarker(place, map, label) {
         default:
             console.log("Invalid marker label: " + label);
     }
-
     google.maps.event.addListener(marker, 'click', function() {
-        var self = this;
-        var names = bakeryNames;
-        var index = bakeryNames.findIndex(matchPlaceName, place);
-        if (index != -1) {
-            content = content + "</br>";
-            content = content + "<p> " + place.name + "</p>";
-            var venueId = venues[index].id;
-            requestFoursquarePhoto();
-            var foursquareQuery = "https://api.foursquare.com/v2/venues/" + venueId + "/photos/?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701";
-            httpRequest = new XMLHttpRequest();
-            if (!httpRequest) {
-                alert('Giving up :( Cannot create an XMLHTTP instance');
-                return false;
-            }
-            httpRequest.onreadystatechange = photosFoursquare;
-            httpRequest.open('GET', foursquareQuery);
-            httpRequest.send();
-
-        }
+        var content = "<img src=" + place.photos[0] + "/>";
+        content = content + "</br>";
+        content = content + "<p> " + place.name + "</p>";
         infowindow.setContent(content);
+        //infowindow.setContent(place.name);
         infowindow.open(map, this);
     });
 }
 
-function initialize() {
-    // Create a map to show the results, and an info window to
-    // pop up if the user clicks on the place marker.
 
-    // Request for latitide and longitude of Fisherman's wharf, SanFrancisco, CA.
-    geocoder = new google.maps.Geocoder();
-    var address = 'fisherman\'s wharf, sanfrancisco, CA, USA';
 
-    geocoder.geocode({
-        'address': address
-    }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            map.setCenter(results[0].geometry.location);
-            getPointsOfInterest(results[0]);
-        }
-    });
-}
+function getPointsOfInterest() {
 
-function getPointsOfInterest(geocoderSearchResult) {
-    map.setCenter(geocoderSearchResult.geometry.location);
-    service = new google.maps.places.PlacesService(map);
 
     var nearbyBakery = {
-        location: geocoderSearchResult.geometry.location,
+        location: sfo,
         radius: '1000',
         type: ['bakery']
     };
     service.nearbySearch(nearbyBakery, markBakeries);
 
     var nearbyBookstore = {
-        location: geocoderSearchResult.geometry.location,
+        location: sfo,
         radius: '1000',
         type: ['book_store']
     };
     service.nearbySearch(nearbyBookstore, markBookstores);
 
     var nearbyParking = {
-        location: geocoderSearchResult.geometry.location,
+        location: sfo,
         radius: '1000',
         type: ['parking']
     };
 
     service.nearbySearch(nearbyParking, markParking);
 
+
     // Create a list and display all the results.
     ko.applyBindings(nearbyResults.allResults);
-    var cll = geocoderSearchResult.geometry.location.lat() + "," + geocoderSearchResult.geometry.location.lng();
-    // write location and phone number info to file.
-    var foursquareQuery = "https://api.foursquare.com/v2/venues/search?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701&ll=" + cll + "&radius=2000&query=bakery&intent=browse&limit=50";
-    httpRequest = new XMLHttpRequest();
-    if (!httpRequest) {
-        alert('Giving up :( Cannot create an XMLHTTP instance');
-        return false;
-    }
-    httpRequest.onreadystatechange = processFoursquare;
-    httpRequest.open('GET', foursquareQuery);
-    httpRequest.send();
 
     function markBakeries(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             nearbyResults.allResults.bakeries(results);
             for (var i = 0; i < results.length; i++) {
-                getDetailsAndCreateMarker(results[i], map, 'F');
+                createMarker(results[i], 'F');
             }
         }
     }
@@ -176,7 +108,7 @@ function getPointsOfInterest(geocoderSearchResult) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             nearbyResults.allResults.bookstores(results);
             for (var i = 0; i < results.length; i++) {
-                getDetailsAndCreateMarker(results[i], map, 'B');
+                createMarker(results[i], 'B');
             }
         }
     }
@@ -185,9 +117,28 @@ function getPointsOfInterest(geocoderSearchResult) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
             nearbyResults.allResults.parkingLots(results);
             for (var i = 0; i < results.length; i++) {
-                getDetailsAndCreateMarker(results[i], map, 'P');
+                createMarker(results[i], 'P');
             }
         }
+        /* service.getDetails(nearbyParking, function(place, status) {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                // If the request succeeds, draw the place location on the map
+                // as a marker, and register an event to handle a click on the marker.
+                var detailsMarker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location
+                });
+
+                google.maps.event.addListener(detailsMarker, 'click', function() {
+                    infoWindow.setContent('<div><strong>' + place.name + '</strong><br>' +
+                        'Place ID: ' + place.place_id + '<br>' +
+                        place.formatted_address + '</div>');
+                    infoWindow.open(map, this);
+                });
+                map.panTo(place.geometry.location);
+            }
+        }); */
+
     }
 
 }
@@ -214,6 +165,7 @@ $('#checkboxParkingLots').on('change', function() {
         }
     }
 });
+
 $('#checkboxBakeries').on('change', function() {
     if (($(this).is(':checked'))) {
         $('#bakeriesList').hide();
@@ -228,6 +180,7 @@ $('#checkboxBakeries').on('change', function() {
         }
     }
 });
+
 $('#checkboxBookstores').on('change', function() {
     if (($(this).is(':checked'))) {
         // display markers for parking lots.
@@ -245,4 +198,4 @@ $('#checkboxBookstores').on('change', function() {
 
 
 // Run the initialize function when the window has finished loading.
-google.maps.event.addDomListener(window, 'load', initialize);
+google.maps.event.addDomListener(window, 'load', getPointsOfInterest);

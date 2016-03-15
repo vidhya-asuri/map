@@ -10,7 +10,6 @@
     <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-
   </head>
   <body>
 
@@ -19,9 +18,6 @@
        <h1>Fisherman's Wharf - SanFrancisco</h1>
      </div>
    </div>
-   
-
-
         <ul class="small-block-grid-2">
          <li> 
            <p>  </p>
@@ -45,47 +41,22 @@
          </li>
         </ul>
          <dl> <dt> Bakeries </dt> </dl>
-       <ul id="bakeriesList" class="small-block-grid-3" data-bind="foreach: bakeries">
+        <ul id="bakeriesList" class="small-block-grid-3" data-bind="foreach: bakeries">
          <li> <span data-bind="text: name"> </span>   </li>
-       </ul>
+       </ul> 
          <dl> <dt> Bookstores </dt> </dl>
        <ul id="bookstoresList" class="small-block-grid-3" data-bind="foreach: bookstores">
-         <li> <span data-bind="text: name"> </span>   </li>
+         <li> <span data-bind="text: name" > </span>   </li>
        </ul>
          <dl> <dt> Parking Lots </dt> </dl>
-       <ul id="parkingLotsList" class="small-block-grid-3" data-bind="foreach: parkingLots">
+       <!-- <ul id="parkingLotsList" class="small-block-grid-3" data-bind="foreach: parkingLots">
          <li> <span data-bind="text: name"> </span>   </li>
-       </ul>
+       </ul> -->
      </div>
    </div>
 
   <div class="row">
     <div class="large-12 columns">
-<!-- 
-<table>
-    <thead>
-        <tr><th>Parking</th><th>Bakeries</th><th>Bookstores</th></tr>
-        <tr>  
-        <th>  
-      <input id="checkboxParking" type="checkbox" "onclick=toggleMarkers" ><label for="checkboxParking">Turn off markers</label>
-             </th>
-        <th>  
-      <input id="checkboxBakeries" type="checkbox"><label for="checkboxBakeries">Turn off markers</label>
-            </th> 
-        <th>  
-      <input id="checkboxBookstores" type="checkbox"><label for="checkboxBookstores">Turn off markers</label>
-            </th> 
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td data-bind="foreach: parkingLots"><p data-bind="text: name"></p> </td>
-            <td data-bind="foreach: bakeries"><p data-bind="text: name"> </p> </td>
-            <td data-bind="foreach: bookstores"><p data-bind="text: name"></p> </td>
-        </tr>
-    </tbody>
-</table>
--->
     </div>
   </div>
 
@@ -98,6 +69,6 @@
     <script src="js/app.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhCQQgc0IsDWHcZRMow6Z7GEWbzqS7yQc&libraries=places"></script>
     <script src="js/knockout.js"></script>
-    <script src="js/map.js"></script>
+    <script src="js/frsqr.js"></script> 
   </body>
 </html>

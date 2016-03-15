@@ -26,16 +26,73 @@ var map = new google.maps.Map(document.getElementById('map'), {
 
 var infowindow = new google.maps.InfoWindow();
 var service = new google.maps.places.PlacesService(map);
+var httpRequest;
+var bakeryNames = [];
+var ids = [];
+var photos = [];
+var venues;
+var contentPhotoUrl = null; 
+function photosFoursquare() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+        if (httpRequest.status === 200) {
+            var response = (httpRequest.responseText);
+            var jsonResponse = JSON.parse(httpRequest.responseText);
+            photos = jsonResponse.response.photos.items;
+            var count = photos.length;
+            if(count > 1){
+              contentPhotoUrl = photos[0].prefix + "100x100" + photos[0].suffix;
+            }
+            /*for (var i = 0; i < count; i++) {
+            } */
+        } else {
+            alert('There was a problem with the request.');
+        }
+    }
+}
 
+function processFoursquare() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+        if (httpRequest.status === 200) {
+            var response = (httpRequest.responseText);
+            var jsonResponse = JSON.parse(httpRequest.responseText);
+            venues = jsonResponse.response.venues;
+            for (var i = 0; i < venues.length; i++) {
+                bakeryNames.push(venues[i].name);
+                var foursquareQuery = "https://api.foursquare.com/v2/venues/" + venues[i].id + "/photos/?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701";
+                httpRequest = new XMLHttpRequest();
+                if (!httpRequest) {
+                alert('Giving up :( Cannot create an XMLHTTP instance');
+                return false;
+                }
+                httpRequest.onreadystatechange = photosFoursquare;
+                httpRequest.open('GET', foursquareQuery);
+                httpRequest.send();
+            }
+        } else {
+            alert('There was a problem with the request.');
+        }
+    }
+}
+
+function matchPlaceName(element, index, array) {
+    var match = element.toLowerCase().includes(this.name.toLowerCase());
+    if (match) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function getDetailsAndCreateMarker(place, map, label) {
+    var content = "";
     console.log(place.place_id);
     var marker = new google.maps.Marker({
         map: map,
         label: label,
         title: place.name,
         position: place.geometry.location
-    });
+    }); 
+
     switch (label) {
         case "F":
             bakeriesMarkers.push(marker);
@@ -51,12 +108,20 @@ function getDetailsAndCreateMarker(place, map, label) {
     }
 
     google.maps.event.addListener(marker, 'click', function() {
-        var photoLocation;
-        var content = "";
-        content = content + "</br>";
-        content = content + "<p> " + place.name + "</p>";
+        var self = this;
+        var names = bakeryNames;
+        var index = bakeryNames.findIndex(matchPlaceName, place);
+        if (index != -1) {
+            content = content + "</br>";
+            content = content + "<p> " + place.name + "</p>";
+            if(contentPhotoUrl != null){
+              content = content + "<img src=\"" + contentPhotoUrl + "\"/>";
+            }
+        }
         infowindow.setContent(content);
         infowindow.open(map, this);
+        contentPhotoUrl = null;
+        content = "";
     });
 }
 
@@ -106,6 +171,16 @@ function getPointsOfInterest(geocoderSearchResult) {
 
     // Create a list and display all the results.
     ko.applyBindings(nearbyResults.allResults);
+    var cll = geocoderSearchResult.geometry.location.lat() + "," + geocoderSearchResult.geometry.location.lng();
+    var foursquareQuery = "https://api.foursquare.com/v2/venues/search?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701&ll=" + cll + "&radius=2000&query=bakery&intent=browse&limit=50";
+    httpRequest = new XMLHttpRequest();
+    if (!httpRequest) {
+        alert('Giving up :( Cannot create an XMLHTTP instance');
+        return false;
+    }
+    httpRequest.onreadystatechange = processFoursquare;
+    httpRequest.open('GET', foursquareQuery);
+    httpRequest.send();
 
     function markBakeries(results, status) {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
@@ -143,7 +218,6 @@ var nearbyResults = {
         parkingLots: ko.observableArray([])
     }
 }
-
 $('#checkboxParkingLots').on('change', function() {
     if (($(this).is(':checked'))) {
         $('#parkingLotsList').hide();
