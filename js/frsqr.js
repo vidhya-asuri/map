@@ -35,9 +35,9 @@ var contentPhotoUrl = null;
 function frsqrBookPhotos() {
     if (bookPhotosRequest.readyState === XMLHttpRequest.DONE) {
         if (bookPhotosRequest.status === 200) {
-            var response = (bookPhotosRequest.responseText);
             var jsonResponse = JSON.parse(bookPhotosRequest.responseText);
-            var count = photos.length;
+            var photos = jsonResponse.response.photos;
+            var count = photos.count;
             if(count > 1){
               photos = jsonResponse.response.photos.items;
               contentPhotoUrl = photos[0].prefix + "100x100" + photos[0].suffix;
@@ -52,7 +52,8 @@ function frsqrBakeryPhotos() {
     if (bakeryPhotosRequest.readyState === XMLHttpRequest.DONE) {
         if (bakeryPhotosRequest.status === 200) {
             var jsonResponse = JSON.parse(bakeryPhotosRequest.responseText);
-            var count = jsonResponse.response.photos.length;
+            var photos = jsonResponse.response.photos;
+            var count = photos.count;
             if(count > 1){
               photos = jsonResponse.response.photos.items;
               contentPhotoUrl = photos[0].prefix + "100x100" + photos[0].suffix;
@@ -159,22 +160,20 @@ function getDetailsAndCreateMarker(map, label) {
             console.log("Invalid marker label: " + label);
     }
 
-    /*google.maps.event.addListener(marker, 'click', function() {
+    google.maps.event.addListener(marker, 'click', function() {
         var self = this;
-        var names = bakeryNames;
-        var index = bakeryNames.findIndex(matchPlaceName, place);
-        if (index != -1) {
+        //if (index != -1) {
             content = content + "</br>";
-            content = content + "<p> " + place.name + "</p>";
+            content = content + "<p> " + venues[i].name + "</p>";
             if(contentPhotoUrl != null){
               content = content + "<img src=\"" + contentPhotoUrl + "\"/>";
             }
-        }
+        //}
         infowindow.setContent(content);
         infowindow.open(map, this);
         contentPhotoUrl = null;
         content = "";
-    }); */
+    }); 
   }
 }
 
