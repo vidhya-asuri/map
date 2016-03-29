@@ -5,6 +5,7 @@
 // https://console.developers.google.com/apis/credentials?project=mapp5-1232
 
 // https://maps.googleapis.com/maps/api/place/radarsearch/json?location=48.859294,2.347589&radius=5000&type=cafe&keyword=vegetarian&key=YOUR_API_KEY
+
 var bakeriesMarkers = [];
 var bookstoresMarkers = [];
 var parkingLotsMarkers = [];
@@ -40,6 +41,7 @@ function processFrsqrBooks(response) {
         if (getBooksRequest.status === 200) {
             var jsonResponse = JSON.parse(getBooksRequest.responseText);
             var bkstr = [];
+            var bkstrNames = [];
             var frsqrBookItems = [];
             if (jsonResponse.response.groups.length > 0) {
                 bookVenues = jsonResponse.response.groups[0];
@@ -77,8 +79,11 @@ function processFrsqrBooks(response) {
                         name: frsqrItem.venue.name,
                         item: frsqrItem
                     };
+                    bkstrNames[i] = frsqrItem.venue.name; 
                 }
                 bookstoreViewModel.bookstores(bkstr);
+                bookstoreViewModel.bookstoreNames(bkstrNames);
+                bookstoreViewModel.filteredVenues(bkstrNames);
             }
             bookstoresDetailsMarkers(map, 'B', frsqrBookItems);
         } else {
@@ -309,15 +314,80 @@ function BakeryViewModel() {
 function BookstoreViewModel() {
     var self = this;
     self.bookstores = ko.observableArray([]);
+    self.bookstoreNames = ko.observableArray([]);
+    self.selectedBookstoreNames = ko.observableArray([]); 
+    self.searchText = ko.observable(); 
+    self.filteredVenues = ko.observableArray([]); 
+
 };
 
 var bookstoreViewModel = new BookstoreViewModel();
 
-ko.applyBindings(bookstoreViewModel, document.getElementById('bookstoresList'));
+// http://stackoverflow.com/questions/20857594/knockout-filtering-on-observable-array
+
+//ko.applyBindings(bookstoreViewModel, document.getElementById('bookstoresList'));
 
 var bakeryViewModel = new BakeryViewModel();
 
-ko.applyBindings(bakeryViewModel, document.getElementById('bakeriesList'));
+//ko.applyBindings(bakeryViewModel, document.getElementById('bakeriesList'));
+
+ko.applyBindings(bookstoreViewModel, document.getElementById('bookstoresList'));
+ko.applyBindings(bookstoreViewModel.searchText, document.getElementById('searchText'));
+
+function indexOfVenue(element,index,array){
+   var self = this;
+   if (this.toLocaleString() === array[index]) {
+     return true;
+   } 
+}
+//searchText
+function getSearchText(textBoxElem){
+
+ var text = textBoxElem.value.toLowerCase();
+  bookstoreViewModel.searchText(text);
+  console.log(JSON.stringify(bookstoreViewModel.filteredVenues));
+  //ko.applyBindings(bookstoreViewModel.filteredVenues(), document.getElementById('bookstoresList'));
+  if(text !== ''){
+  //bookstoreViewModel.bookstoreNames( bookstoreViewModel.bookstoreNames().map(function(item,index,array){
+  bookstoreViewModel.filteredVenues( bookstoreViewModel.bookstoreNames().map(function(item,index,array){
+       if(array[index].toLowerCase().startsWith(text)){
+          return array[index];
+       }
+    })); 
+  }
+  else{
+
+     bookstoreViewModel.filteredVenues(bookstoreViewModel.bookstoreNames());
+
+  }
+
+  console.log(JSON.stringify( bookstoreViewModel.filteredVenues())); 
+
+
+/*  console.log(JSON.stringify( bookstoreViewModel.bookstoreNames().map(function(item,index,array){
+       if(array[index].toLowerCase().startsWith(text)){
+          return array[index];
+       }
+    }) )); */
+
+};
+
+function displaySelection(){
+// http://stackoverflow.com/questions/610336/retrieving-the-text-of-the-selected-option-in-select-element
+  var self = this;
+  var elem = document.getElementById('bookstoresList');
+    if (elem.selectedIndex == -1)
+        return null;
+  var numSelected = bookstoreViewModel.selectedBookstoreNames().length;
+  for (var i=0; i < numSelected; i++){
+    var elem = bookstoreViewModel.selectedBookstoreNames()[i];
+    // find the index in bookstores array corresponding to elem.
+    var ind = bookstoreViewModel.bookstoreNames().findIndex(indexOfVenue,elem);
+    console.log(ind);
+  }
+   // animate this marker.
+}
+
 
 $('#checkboxParkingLots').on('change', function() {
     var b = bookstoreViewModel.bookstores();

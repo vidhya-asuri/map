@@ -8,7 +8,7 @@
 var bakeriesMarkers = [];
 var bookstoresMarkers = [];
 var parkingLotsMarkers = [];
-var geocoderSearchResult;
+var geocoderSearchResult; 
 var nyc = new google.maps.LatLng(40.7127, 74.0059);
 var pyrmont = {
     lat: -33.867,
@@ -31,7 +31,7 @@ var bakeryNames = [];
 var ids = [];
 var bookVenues;
 var bakVenues;
-var contentPhotoUrl = null;
+var contentPhotoUrl = null; 
 var bookstorePhotos = [];
 var bakeryPhotos = [];
 
@@ -41,46 +41,32 @@ function processFrsqrBooks(response) {
             var jsonResponse = JSON.parse(getBooksRequest.responseText);
             var bkstr = [];
             var frsqrBookItems = [];
-            if (jsonResponse.response.groups.length > 0) {
-                bookVenues = jsonResponse.response.groups[0];
-                items = bookVenues.items;
-                for (var i = 0; i < items.length; i++) {
-                    var frsqrItem = {
-                        tips: '',
-                        venue: {
-                            'name': '',
-                            'venueUrl': '',
-                            'venuePhotoUrl': '',
-                            'rating': 0.0,
-                            'lat': 0,
-                            'lng': 0
-                        }
-                    }
-                    frsqrItem.tips = items[i].tips;
-                    frsqrItem.venue.name = items[i].venue.name;
-                    frsqrItem.venue.venueUrl = items[i].venue.url;
-                    frsqrItem.venue.lat = items[i].venue.location.lat;
-                    frsqrItem.venue.lng = items[i].venue.location.lng;
-                    if (items[i].venue.photos.count > 0) {
-                        // there is at least one photo - so construct photo url. 
-                        var groups = items[i].venue.photos.groups;
-                        if (groups.length > 0) {
-                            var photoItems = groups[0].items;
-                            if (photoItems.length > 0) {
-                                frsqrItem.venue.venuePhotoUrl = photoItems[0].prefix + '50x50' + photoItems[0].suffix;
-                            }
-                        }
-                    }
-                    frsqrItem.venue.rating = items[i].venue.rating;
-                    frsqrBookItems.push(frsqrItem);
-                    bkstr[i] = {
-                        name: frsqrItem.venue.name,
-                        item: frsqrItem
-                    };
+            if(jsonResponse.response.groups.length > 0){
+              bookVenues = jsonResponse.response.groups[0];
+              items = bookVenues.items;
+              for(var i=0; i < items.length; i++){
+                frsqrItem.tips = items[i].tips; 
+                frsqrItem.venue.name = items[i].venue.name;
+                frsqrItem.venue.venueUrl = items[i].venue.url;
+                frsqrItem.venue.lat = items[i].venue.location.lat;
+                frsqrItem.venue.lng = items[i].venue.location.lng;
+                if(items[i].venue.photos.count > 0){
+                  // there is at least one photo - so construct photo url. 
+                  var groups = items[i].venue.photos.groups;
+                  if(groups.length > 0){
+                    var photoItems = groups[0].items;
+                    if(photoItems.length > 0){
+                       frsqrItem.venue.venuePhotoUrl = photoItems[0].prefix + '50x50' + photoItems[0].suffix; 
+                    } 
+                  }
                 }
-                bookstoreViewModel.bookstores(bkstr);
+                frsqrItem.venue.rating = items[i].venue.rating;
+                frsqrBookItems.push(frsqrItem); 
+                bkstr[i]= {name: frsqrItem.venue.name, item: frsqrItem };
+              }
+              bookstoreViewModel.bookstores(bkstr); 
             }
-            bookstoresDetailsMarkers(map, 'B', frsqrBookItems);
+            bookstoresDetailsMarkers(map,'B',frsqrBookItems);
         } else {
             alert('There was a problem with the request.');
         }
@@ -127,48 +113,37 @@ function processFrsqrBooks(response) {
     }
 }
 */
-
-function bookstoresDetailsMarkers(map, label, frsqrBookItems) {
+function bookstoresDetailsMarkers(map,label,frsqrBookItems) {
     var content = "";
     var marker;
     for (var i = 0; i < frsqrBookItems.length; i++) {
-        var lat = frsqrBookItems[i].venue.lat;
-        var lng = frsqrBookItems[i].venue.lng;
-        var latLng = {
-            lat: lat,
-            lng: lng
-        };
-        marker = new google.maps.Marker({
-            map: map,
-            label: label,
-            animation: google.maps.Animation.DROP,
-            title: frsqrBookItems[i].venue.name,
-            id: i,
-            position: latLng
-        });
+       var lat = frsqrBookItems[i].venue.lat;
+       var lng = frsqrBookItems[i].venue.lng;
+       var latLng = {lat: lat, lng: lng};
+       marker = new google.maps.Marker({
+         map: map,
+         label: label,
+         title: frsqrBookItems[i].venue.name,
+         id: i,
+         position: latLng
+       });
 
-        bookstoresMarkers.push(marker);
-        google.maps.event.addListener(marker, 'click', function() {
-            var self = this;
-
-            if (self.getAnimation() !== null) {
-    self.setAnimation(null);
-  } else {
-    self.setAnimation(google.maps.Animation.BOUNCE);
-  }
-
-
+       bookstoresMarkers.push(marker);
+       google.maps.event.addListener(marker, 'click', function() {
+        var self = this;
             content = content + "</br>";
             content = content + "<p> " + this.title + "</p>";
-            content = content + "<img src=\"" + frsqrBookItems[this.id].venue.venuePhotoUrl +  "\"/>";
-            infowindow.setContent(content);
-            infowindow.open(map, this);
-            contentPhotoUrl = null;
-            content = "";
-        });
-    }
+            content = content + "<img src=\"" + bookstorePhotos[this.id][0].prefix + "100x100" + bookstorePhotos[this.id][0].suffix + "\"/>";
+            if(contentPhotoUrl != null){
+              content = content + "<img src=\"" + bookstorePhotos[i][0] + "\"/>";
+            }
+        infowindow.setContent(content);
+        infowindow.open(map, this);
+        contentPhotoUrl = null;
+        content = "";
+    });
+  }
 }
-
 /*
 function bakeriesDetailsMarkers(map,label,frsqrBakeryItems) {
     var content = "";
@@ -209,62 +184,61 @@ function initialize() {
     // Request for latitide and longitude of Fisherman's wharf, SanFrancisco, CA.
     geocoder = new google.maps.Geocoder();
     var address = 'fisherman\'s wharf, sanfrancisco, CA, USA';
-    //getBookstores(sfo);
+
     geocoder.geocode({
         'address': address
     }, function(results, status) {
-        if (status == google.maps.GeocoderStatus.OK) {
-            geocoderSearchResult = results[0];
+        if (status == google.maps.GeocoderStatus.OK){
+            geocoderSearchResult = results[0]; 
             map.setCenter(geocoderSearchResult.geometry.location);
             //map.setCenter(results[0].geometry.location);
-            //getBakeries(results[0]);
-            //getBookstores(geocoderSearchResult);
-            getBookstores(geocoderSearchResult).then(function(response) {
-                processFrsqrBooks(response);
-            }, function(error) {
-                console.log(error);
-            });
+	    /* getBakeries(results[0]);
+            getBookstores(results[0]); */
+	    //getBakeries(geocoderSearchResult);
+            getBookstores(geocoderSearchResult);
         }
     });
 }
 
 // code attribution: https://github.com/mdn/promises-test/blob/gh-pages/index.html 
 function getBookstores(geocoderSearchResult) {
+ 
+   return new Promise(function(resolve,reject){
 
-    return new Promise(function(resolve, reject) {
+   map.setCenter(geocoderSearchResult.geometry.location);
+    // Create a list and display all the results.
+    var cll = geocoderSearchResult.geometry.location.lat() + "," + geocoderSearchResult.geometry.location.lng();
+    var foursquareQuery = "https://api.foursquare.com/v2/venues/explore?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701&ll=" + cll + "&radius=1000&query=books&venuePhotos=1&limit=50";
+    getBooksRequest = new XMLHttpRequest();
+    if (!getBooksRequest) {
+        alert('Giving up getBookstores:( Cannot create an XMLHTTP instance');
+        return false;
+    }
+    getBooksRequest.open('GET', foursquareQuery);
+    getBooksRequest.responseType = 'text';
+    getBooksRequest.onload = function(){
+      if(getBooksRequest.status === 200){
+        resolve(getBooksRequest.response);
+       } else{
+         reject(Error('Request did not load successfully' + getBooksRequest.statusText));
+       }
+      
+    }; 
 
-        //map.setCenter(sfo);
-        if (geocoderSearchResult.geometry.location) {
-            map.setCenter(geocoderSearchResult.geometry.location);
-            // Create a list and display all the results.
-            //var cll = sfo.lat + "," + sfo.lng;
-            var cll = geocoderSearchResult.geometry.location.lat() + "," + geocoderSearchResult.geometry.location.lng();
-            var foursquareQuery = "https://api.foursquare.com/v2/venues/explore?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701&ll=" + cll + "&radius=1000&query=books&venuePhotos=1&limit=50";
-            getBooksRequest = new XMLHttpRequest();
-            if (!getBooksRequest) {
-                alert('Giving up getBookstores:( Cannot create an XMLHTTP instance');
-                return false;
-            }
-            getBooksRequest.open('GET', foursquareQuery);
-            getBooksRequest.responseType = 'text';
-            getBooksRequest.onload = function() {
-                if (getBooksRequest.status === 200) {
-                    resolve(getBooksRequest.response);
-                } else {
-                    reject(Error('Request did not load successfully' + getBooksRequest.statusText));
-                }
+    getBooksRequest.onerror = function(){
+      reject(Error('There was a network error'));
+    };
 
-            };
-
-            getBooksRequest.onerror = function() {
-                reject(Error('There was a network error'));
-            };
-
-            getBooksRequest.send();
-        } // if ends
-    });
+    getBooksRequest.send();
+  });
 }
 
+getBookstores(geocoderSearchResult).then(function(response){
+  processFrsqrBooks(response);
+}, function(error){
+     console.log(error);
+   }
+);
 
 /*
 function getBookstores(geocoderSearchResult) {
@@ -313,11 +287,11 @@ function BookstoreViewModel() {
 
 var bookstoreViewModel = new BookstoreViewModel();
 
-ko.applyBindings(bookstoreViewModel, document.getElementById('bookstoresList'));
+ko.applyBindings(bookstoreViewModel,document.getElementById('bookstoresList'));
 
 var bakeryViewModel = new BakeryViewModel();
 
-ko.applyBindings(bakeryViewModel, document.getElementById('bakeriesList'));
+ko.applyBindings(bakeryViewModel,document.getElementById('bakeriesList'));
 
 $('#checkboxParkingLots').on('change', function() {
     var b = bookstoreViewModel.bookstores();
@@ -369,5 +343,18 @@ var bookPhotosRequest;
 var bakeryPhotosRequest;
 
 
+var frsqrItem = { 
+  tips: '',
+  venue: {
+           'name': '',
+           'venueUrl': '',
+           'venuePhotoUrl': '',
+           'rating': 0.0,
+           'lat': 0,
+           'lng': 0
+         } 
+}
+
+ 
 // Run the initialize function when the window has finished loading.
 google.maps.event.addDomListener(window, 'load', initialize);
