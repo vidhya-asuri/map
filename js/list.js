@@ -79,7 +79,7 @@ function processFrsqrBooks(response) {
                         name: frsqrItem.venue.name,
                         item: frsqrItem
                     };
-                    bkstrNames[i] = frsqrItem.venue.name; 
+                    bkstrNames[i] = frsqrItem.venue.name;
                 }
                 bookstoreViewModel.bookstores(bkstr);
                 bookstoreViewModel.bookstoreNames(bkstrNames);
@@ -157,15 +157,15 @@ function bookstoresDetailsMarkers(map, label, frsqrBookItems) {
             var self = this;
 
             if (self.getAnimation() !== null) {
-    self.setAnimation(null);
-  } else {
-    self.setAnimation(google.maps.Animation.BOUNCE);
-  }
+                self.setAnimation(null);
+            } else {
+                self.setAnimation(google.maps.Animation.BOUNCE);
+            }
 
 
             content = content + "</br>";
             content = content + "<p> " + this.title + "</p>";
-            content = content + "<img src=\"" + frsqrBookItems[this.id].venue.venuePhotoUrl +  "\"/>";
+            content = content + "<img src=\"" + frsqrBookItems[this.id].venue.venuePhotoUrl + "\"/>";
             infowindow.setContent(content);
             infowindow.open(map, this);
             contentPhotoUrl = null;
@@ -315,9 +315,9 @@ function BookstoreViewModel() {
     var self = this;
     self.bookstores = ko.observableArray([]);
     self.bookstoreNames = ko.observableArray([]);
-    self.selectedBookstoreNames = ko.observableArray([]); 
-    self.searchText = ko.observable(); 
-    self.filteredVenues = ko.observableArray([]); 
+    self.selectedBookstoreNames = ko.observableArray([]);
+    self.searchText = ko.observable();
+    self.filteredVenues = ko.observableArray([]);
 
 };
 
@@ -334,58 +334,95 @@ var bakeryViewModel = new BakeryViewModel();
 ko.applyBindings(bookstoreViewModel, document.getElementById('bookstoresList'));
 ko.applyBindings(bookstoreViewModel.searchText, document.getElementById('searchText'));
 
-function indexOfVenue(element,index,array){
-   var self = this;
-   if (this.toLocaleString() === array[index]) {
-     return true;
-   } 
+function indexOfVenue(element, index, array) {
+    var self = this;
+    if (this.toLocaleString() === array[index]) {
+        return true;
+    }
 }
 //searchText
-function getSearchText(textBoxElem){
+function getSearchText(textBoxElem) {
 
- var text = textBoxElem.value.toLowerCase();
-  bookstoreViewModel.searchText(text);
-  console.log(JSON.stringify(bookstoreViewModel.filteredVenues));
-  //ko.applyBindings(bookstoreViewModel.filteredVenues(), document.getElementById('bookstoresList'));
-  if(text !== ''){
-  //bookstoreViewModel.bookstoreNames( bookstoreViewModel.bookstoreNames().map(function(item,index,array){
-  bookstoreViewModel.filteredVenues( bookstoreViewModel.bookstoreNames().map(function(item,index,array){
-       if(array[index].toLowerCase().startsWith(text)){
-          return array[index];
-       }
-    })); 
-  }
-  else{
+    var text = textBoxElem.value.toLowerCase();
+    bookstoreViewModel.searchText(text);
+    console.log(JSON.stringify(bookstoreViewModel.filteredVenues));
+    //ko.applyBindings(bookstoreViewModel.filteredVenues(), document.getElementById('bookstoresList'));
+    if (text !== '') {
+        //bookstoreViewModel.bookstoreNames( bookstoreViewModel.bookstoreNames().map(function(item,index,array){
+        bookstoreViewModel.filteredVenues(bookstoreViewModel.bookstoreNames().map(function(item, index, array) {
+            if (array[index].toLowerCase().startsWith(text)) {
+                return array[index];
+            }
+        }));
+    } else {
 
-     bookstoreViewModel.filteredVenues(bookstoreViewModel.bookstoreNames());
+        bookstoreViewModel.filteredVenues(bookstoreViewModel.bookstoreNames());
 
-  }
-
-  console.log(JSON.stringify( bookstoreViewModel.filteredVenues())); 
-
-
-/*  console.log(JSON.stringify( bookstoreViewModel.bookstoreNames().map(function(item,index,array){
-       if(array[index].toLowerCase().startsWith(text)){
-          return array[index];
-       }
-    }) )); */
-
+    }
+    console.log(JSON.stringify(bookstoreViewModel.filteredVenues()));
 };
 
-function displaySelection(){
-// http://stackoverflow.com/questions/610336/retrieving-the-text-of-the-selected-option-in-select-element
-  var self = this;
-  var elem = document.getElementById('bookstoresList');
+function displaySelection() {
+    // http://stackoverflow.com/questions/610336/retrieving-the-text-of-the-selected-option-in-select-element
+    var self = this;
+    var elem = document.getElementById('bookstoresList');
     if (elem.selectedIndex == -1)
         return null;
-  var numSelected = bookstoreViewModel.selectedBookstoreNames().length;
-  for (var i=0; i < numSelected; i++){
-    var elem = bookstoreViewModel.selectedBookstoreNames()[i];
-    // find the index in bookstores array corresponding to elem.
-    var ind = bookstoreViewModel.bookstoreNames().findIndex(indexOfVenue,elem);
-    console.log(ind);
-  }
-   // animate this marker.
+    var numSelected = bookstoreViewModel.selectedBookstoreNames().length;
+  /*var lineSymbol = {
+    path: google.maps.SymbolPath.CIRCLE,
+    scale: 8,
+    strokeColor: '#393'
+  };
+  var line = new google.maps.Polyline({
+//http://stackoverflow.com/questions/14288358/google-maps-polyline-how-to-get-a-transparent-invisible-polyline 
+    icons: [{
+      icon: lineSymbol,
+      offset: '100%'
+    }],
+    strokeColor: '#000000',
+    strokeOpacity: 1.0, 
+    strokeWeight: 3,
+    map: map
+  });*/
+
+    for (var i = 0; i < numSelected; i++) {
+        var elem = bookstoreViewModel.selectedBookstoreNames()[i];
+        // find the index in bookstores array corresponding to elem.
+        var ind = bookstoreViewModel.bookstoreNames().findIndex(indexOfVenue, elem);
+        console.log(ind);
+        if ((ind >= 0) && (ind < bookstoresMarkers.length)) {
+            var currentMarker = bookstoresMarkers[ind];
+            currentMarker.setAnimation(google.maps.Animation.DROP);
+            if (currentMarker.getAnimation() !== null) {
+                currentMarker.setAnimation(null);
+                currentMarker.setAnimation(google.maps.Animation.BOUNCE);
+            } else {
+                currentMarker.setAnimation(google.maps.Animation.BOUNCE);
+            }
+            /*var curLat = currentMarker.position.lat(); 
+            var curLng = currentMarker.position.lng();
+            newPath = [{lat: curLat+0.005, lng: curLng}, {lat: curLat, lng: curLng}];
+            line.setPath(newPath);         
+            animateCircle(line); */
+        }
+    }
+    // animate this marker.
+}
+
+function animateCircle(line) {
+    var count = 0;
+    var intervalId = window.setInterval(function() {
+      count = (count + 1) % 200;
+      var icons = line.get('icons');
+      icons[0].offset = (count / 2) + '%';
+      line.set('icons', icons);
+    }, 20);
+    var timeoutId = window.setTimeout(stopAnimation,10000,intervalId);
+}
+
+function stopAnimation(intervalId) {
+    clearInterval(intervalId);
 }
 
 

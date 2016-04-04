@@ -29,7 +29,27 @@ var service = new google.maps.places.PlacesService(map);
 var httpRequest;
 var bakeryNames = [];
 var ids = [];
+var photos = [];
 var venues;
+var contentPhotoUrl = null;
+
+function photosFoursquare() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+        if (httpRequest.status === 200) {
+            var response = (httpRequest.responseText);
+            var jsonResponse = JSON.parse(httpRequest.responseText);
+            photos = jsonResponse.response.photos.items;
+            var count = photos.length;
+            if (count > 1) {
+                contentPhotoUrl = photos[0].prefix + "100x100" + photos[0].suffix;
+            }
+            /*for (var i = 0; i < count; i++) {
+            } */
+        } else {
+            alert('There was a problem with the request.');
+        }
+    }
+}
 
 function processFoursquare() {
     if (httpRequest.readyState === XMLHttpRequest.DONE) {
@@ -39,7 +59,15 @@ function processFoursquare() {
             venues = jsonResponse.response.venues;
             for (var i = 0; i < venues.length; i++) {
                 bakeryNames.push(venues[i].name);
-                ids.push(venues[i].id);
+                var foursquareQuery = "https://api.foursquare.com/v2/venues/" + venues[i].id + "/photos/?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701";
+                httpRequest = new XMLHttpRequest();
+                if (!httpRequest) {
+                    alert('Giving up :( Cannot create an XMLHTTP instance');
+                    return false;
+                }
+                httpRequest.onreadystatechange = photosFoursquare;
+                httpRequest.open('GET', foursquareQuery);
+                httpRequest.send();
             }
         } else {
             alert('There was a problem with the request.');
@@ -87,21 +115,14 @@ function getDetailsAndCreateMarker(place, map, label) {
         if (index != -1) {
             content = content + "</br>";
             content = content + "<p> " + place.name + "</p>";
-            var venueId = venues[index].id;
-            requestFoursquarePhoto();
-            var foursquareQuery = "https://api.foursquare.com/v2/venues/" + venueId + "/photos/?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701";
-            httpRequest = new XMLHttpRequest();
-            if (!httpRequest) {
-                alert('Giving up :( Cannot create an XMLHTTP instance');
-                return false;
+            if (contentPhotoUrl != null) {
+                content = content + "<img src=\"" + contentPhotoUrl + "\"/>";
             }
-            httpRequest.onreadystatechange = photosFoursquare;
-            httpRequest.open('GET', foursquareQuery);
-            httpRequest.send();
-
         }
         infowindow.setContent(content);
         infowindow.open(map, this);
+        contentPhotoUrl = null;
+        content = "";
     });
 }
 
@@ -152,7 +173,6 @@ function getPointsOfInterest(geocoderSearchResult) {
     // Create a list and display all the results.
     ko.applyBindings(nearbyResults.allResults);
     var cll = geocoderSearchResult.geometry.location.lat() + "," + geocoderSearchResult.geometry.location.lng();
-    // write location and phone number info to file.
     var foursquareQuery = "https://api.foursquare.com/v2/venues/search?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701&ll=" + cll + "&radius=2000&query=bakery&intent=browse&limit=50";
     httpRequest = new XMLHttpRequest();
     if (!httpRequest) {
@@ -199,7 +219,6 @@ var nearbyResults = {
         parkingLots: ko.observableArray([])
     }
 }
-
 $('#checkboxParkingLots').on('change', function() {
     if (($(this).is(':checked'))) {
         $('#parkingLotsList').hide();
