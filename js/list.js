@@ -6,15 +6,8 @@
 
 // https://maps.googleapis.com/maps/api/place/radarsearch/json?location=48.859294,2.347589&radius=5000&type=cafe&keyword=vegetarian&key=YOUR_API_KEY
 
-var bakeriesMarkers = [];
-//var bookstoresMarkers = [];
-var parkingLotsMarkers = [];
 var geocoderSearchResult;
 var nyc = new google.maps.LatLng(40.7127, 74.0059);
-var pyrmont = {
-    lat: -33.867,
-    lng: 151.195
-};
 var sfo = {
     lat: -37.7833,
     lng: 122.4167
@@ -28,10 +21,7 @@ var map = new google.maps.Map(document.getElementById('map'), {
 
 var infowindow = new google.maps.InfoWindow();
 var service = new google.maps.places.PlacesService(map);
-var bakeryNames = [];
 var ids = [];
-var bookVenues;
-var bakVenues;
 var contentPhotoUrl = null;
 var bookstorePhotos = [];
 var bakeryPhotos = [];
@@ -40,13 +30,14 @@ function processFrsqrBooks(response) {
     if (getBooksRequest.readyState === XMLHttpRequest.DONE) {
         if (getBooksRequest.status === 200) {
             var jsonResponse = JSON.parse(getBooksRequest.responseText);
-            var bkstr = [];
-            var bkstrNames = [];
+            var bkstr = []; // array, holds the frsqrItem object literal that is defined inside the loop below. 
+            var bkstrNames = []; // array, holds just names from the frsqrItem object literal that is defined inside the loop below.
             var frsqrBookItems = [];
             if (jsonResponse.response.groups.length > 0) {
                 bookVenues = jsonResponse.response.groups[0];
                 items = bookVenues.items;
                 for (var i = 0; i < items.length; i++) {
+                    // object that holds data for individual locations from the Foursquare response.
                     var frsqrItem = {
                         tips: '',
                         venue: {
@@ -59,15 +50,18 @@ function processFrsqrBooks(response) {
                         },
                         index: ''
                     }
+                    // populate the object literal with data from the response.
                     frsqrItem.tips = items[i].tips;
                     frsqrItem.venue.name = items[i].venue.name;
                     frsqrItem.venue.venueUrl = items[i].venue.url;
                     frsqrItem.venue.lat = items[i].venue.location.lat;
                     frsqrItem.venue.lng = items[i].venue.location.lng;
                     frsqrItem.venue.index = i;
+                    // Photos for the locations,   
                     if (items[i].venue.photos.count > 0) {
                         // there is at least one photo - so construct photo url. 
                         var groups = items[i].venue.photos.groups;
+                        // Some Foursquare 'venues' do not have photos, so check if the location has any photos
                         if (groups.length > 0) {
                             var photoItems = groups[0].items;
                             if (photoItems.length > 0) {
@@ -83,7 +77,9 @@ function processFrsqrBooks(response) {
                     };
                     bkstrNames[i] = frsqrItem.venue.name;
                 }
-                bookstoreViewModel.bookstores(bkstr);
+                // bookstoreViewModel  - global ViewModel object 
+                // The next three lines populate the observable arrays in the viewmodel. 
+                bookstoreViewModel.bookstores(bkstr);   
                 bookstoreViewModel.bookstoreNames(bkstrNames);
                 bookstoreViewModel.filteredVenues(bkstrNames);
             }
@@ -94,6 +90,8 @@ function processFrsqrBooks(response) {
     }
 }
 
+
+// This function  
 function bookstoresDetailsMarkers(map, frsqrBookItems) {
     var content = "";
     var marker;
@@ -104,6 +102,9 @@ function bookstoresDetailsMarkers(map, frsqrBookItems) {
             lat: lat,
             lng: lng
         };
+        // The marker object , 
+        // - animation property set to DROP.
+        // - icon property is set to an icon from Templatic     
         marker = new google.maps.Marker({
             map: map,
             animation: google.maps.Animation.DROP,
@@ -112,17 +113,18 @@ function bookstoresDetailsMarkers(map, frsqrBookItems) {
             icon: './templatic/books-media.png',
             position: latLng
         });
-
+        // Insert the marker object into the markers observable array in the view model  
         bookstoreViewModel.markers.push(marker);
+        // add click handler to every marker.
+        // When a marker is clicked, the name of the location and photo is displayed.
+        // The animation property is set to bounce, so the marker bounces when you click on it 
         google.maps.event.addListener(marker, 'click', function() {
             var self = this;
-
             if (self.getAnimation() !== null) {
                 self.setAnimation(null);
             } else {
                 self.setAnimation(google.maps.Animation.BOUNCE);
             }
-
             content = content + "</br>";
             content = content + "<p> " + this.title + "</p>";
             content = content + "<img src=\"" + frsqrBookItems[this.id].venue.venuePhotoUrl + "\"/>";
@@ -160,11 +162,9 @@ function initialize() {
 function getBookstores(geocoderSearchResult) {
 
     return new Promise(function(resolve, reject) {
-        //map.setCenter(sfo);
         if (geocoderSearchResult.geometry.location) {
             map.setCenter(geocoderSearchResult.geometry.location);
             // Create a list and display all the results.
-            //var cll = sfo.lat + "," + sfo.lng;
             var cll = geocoderSearchResult.geometry.location.lat() + "," + geocoderSearchResult.geometry.location.lng();
             var foursquareQuery = "https://api.foursquare.com/v2/venues/explore?client_id=F0XYIB113FEQQVQFFK5DGZ4V5PJBZA2DRNAXHFUW1G3UBE3N&client_secret=ZYY5PZ15D02DLZ0D3RGBADODPBC1KMKX4ZIQ4XNDNLUKBKEB&v=20140701&ll=" + cll + "&radius=1000&query=books&venuePhotos=1&limit=50";
             getBooksRequest = new XMLHttpRequest();
