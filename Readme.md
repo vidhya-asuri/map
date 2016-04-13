@@ -11,11 +11,79 @@ This is a one page application that displays points of interest (bookstores/rela
 0.0.1
 
 
+## Cloning/setting up.
 
 
-### How to use
+Here are the steps that i followed in my development environment. 
+
+
+>  Steps 1 through 3 need to be executed outside of your web server root directory.
+
+
+#### Step 1: Clone the repo (outside of web root)
+
+
+``` sh
+
+
+sudo git https://github.com/vidhya-asuri/map.git
+
+
+```
+
+
+#### Step 2: Install npm pacakges.
+
+
+``` sh
+
+
+sudo npm install 
+
+
+```
+
+
+#### Step 3: 
+
+
+3.a. Set permissions on the repository; make sure root user is not the owner.
+
+
+3.b. Change user and group to the logged in user.
+
+
+``` sh
+
+
+sudo chown -R vid:vid .
+
+
+```
+
+
+#### Step 4: Use bower to install the Foundation framework.
+
+
+``` sh
+
+
+bower install
+
+
+```
+
+
+#### Step 5: Move the repo to your web root.
+
+
+
+
+## How to use/run the application.
 Open list.html in the root directory in a browser; this should load the map.
-li.js in the javascript directory contains all the javascript code that is needed for the application.
+
+
+list.js in the javascript directory contains all the javascript code that is needed for the application.
 
 
 When the page loads the application displays a full page map with markers showing hard-coded points of interest.
@@ -32,10 +100,6 @@ Type some text into the box and the locations and markers should be filtered bas
 
 
 For now, the starting characters in the search text is used as the filtering criterion 
-
-
-
-
 
 
 
