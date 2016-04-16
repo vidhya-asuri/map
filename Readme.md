@@ -14,10 +14,6 @@ This is a one page application that displays points of interest (bookstores/rela
 ## Cloning/setting up.
 
 
-Here are the steps that i followed in my development environment. 
-
-
->  Steps 1 through 3 need to be executed outside of your web server root directory.
 
 
 #### Step 1: Clone the repo (outside of web root)
@@ -26,60 +22,17 @@ Here are the steps that i followed in my development environment.
 ``` sh
 
 
-sudo git https://github.com/vidhya-asuri/map.git
+sudo git clone https://github.com/vidhya-asuri/map.git
 
 
 ```
 
 
-#### Step 2: Install npm pacakges.
-
-
-``` sh
-
-
-sudo npm install 
-
-
-```
-
-
-#### Step 3: 
-
-
-3.a. Set permissions on the repository; make sure root user is not the owner.
-
-
-3.b. Change user and group to the logged in user.
-
-
-``` sh
-
-
-sudo chown -R vid:vid .
-
-
-```
-
-
-#### Step 4: Use bower to install the Foundation framework.
-
-
-``` sh
-
-
-bower install
-
-
-```
-
-
-#### Step 5: Move the repo to your web root.
-
-
+#### Step 2: Launch application by loading list.html in a browser.
 
 
 ## How to use/run the application.
+
 Open list.html in the root directory in a browser; this should load the map.
 
 
